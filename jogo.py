@@ -54,7 +54,7 @@ for imagem in range(1, 7):
 
 # RETÂNGULO DE COLISÃO DO PROTAGONISTA
 protagonista_superficies = protagonista_andando_superficie[protagonista_index]
-protagonista_retangulo = protagonista_superficies.get_rect(center = (100, 330))
+protagonista_retangulo = protagonista_superficies.get_rect(midbottom = (100, 330))
 protagonista_gravidade = 0
 
 
