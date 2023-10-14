@@ -5,7 +5,6 @@ from random import randint
 # DEFINE A ANIMAÇÃO DO PROTAGONISTA
 def animacao_protagonista():
     global protagonista_superficies, protagonista_index
-    ataque = 0
 
     # Animação do personagem andando no chão, pulando e atacando.
     # Só ataca quando está no chão.
@@ -15,15 +14,11 @@ def animacao_protagonista():
         protagonista_index += 0.1
         if protagonista_index >= len(protagonista_andando_superficie): protagonista_index = 0
         protagonista_superficies = protagonista_andando_superficie[int(protagonista_index)]
-        
-    if ataque == 1:
-            protagonista_superficies = protagonista_ataque_superficie[int(protagonista_index)]
-    else:
-        if protagonista_index >= len(protagonista_andando_superficie): protagonista_index = 0
-        protagonista_superficies = protagonista_andando_superficie[int(protagonista_index)]
 
     # Faz o owlet aparecer na tela.
     tela.blit(protagonista_superficies, protagonista_retangulo)
+
+
 
 # DEFINE O MOVIMENTO DOS OBSTÁCULOS
 def obstaculos(lista_obstaculos):
@@ -86,10 +81,19 @@ for imagem in range(1, 7):
     img = pygame.transform.scale(img, (128, 128))
     protagonista_ataque_superficie.append(img)
 
+# Carrega o projétil que o protagonista atira.
+projetil_frames = []
+projetil_index = 0
+for imagem in range(1, 5):
+    img = pygame.image.load(f'assets/protagonista/projetil_ataque/owl_projetil{imagem}.png').convert_alpha()
+    projetil_frames.append(img)
+
 # RETÂNGULO DE COLISÃO DO PROTAGONISTA
 protagonista_superficies = protagonista_andando_superficie[protagonista_index]
 protagonista_retangulo = protagonista_superficies.get_rect(midbottom = (100, 470))
 protagonista_gravidade = 0
+
+
 
 
 
@@ -114,13 +118,13 @@ lista_retang_obstaculos = []
 
 # CRIA O TIMER DOS OBSTÁCULOS
 obstaculos_timer = pygame.USEREVENT + 1
-pygame.time.set_timer(obstaculos_timer, 1500)
+pygame.time.set_timer(obstaculos_timer, 1200)
 
 spikes_timer = pygame.USEREVENT + 2
-pygame.time.set_timer(spikes_timer, 300)
+pygame.time.set_timer(spikes_timer, 280)
 
 pedras_timer = pygame.USEREVENT + 3
-pygame.time.set_timer(pedras_timer, 50)
+pygame.time.set_timer(pedras_timer, 90)
 
 
 
@@ -145,22 +149,16 @@ while True:
             if evento.key == pygame.K_SPACE and protagonista_retangulo.bottom >= 470:
                 protagonista_gravidade = -20
 
-        # CONTROLA O ATAQUE DO PROTAGONISTA
-        if evento.type == pygame.KEYDOWN:
-            if evento.key == pygame.K_KP_ENTER and protagonista_retangulo.bottom >= 470:
-                ataque = 1
-
         if evento.type == pygame.KEYUP:
             protagonista_superficies = protagonista_andando_superficie[int(protagonista_index)]
-            ataque = 0
 
         # CRIA EVENTOS REFERENTES AOS OBSTÁCULOS
         if evento.type == obstaculos_timer:
             if randint(0, 2):
                 # Retângulo dos spikes.
-                lista_retang_obstaculos.append(spikes_superficie.get_rect(bottomright = (randint(900, 1100), 470)))
+                lista_retang_obstaculos.append(spikes_superficie.get_rect(bottomright = (randint(960, 1400), 470)))
                 # Retângulo das pedras.
-                lista_retang_obstaculos.append(pedras_superficie.get_rect(bottomright = (randint(800, 1050), 200)))
+                lista_retang_obstaculos.append(pedras_superficie.get_rect(bottomright = (randint(960, 1250), 200)))
         
         if evento.type == spikes_timer:
             if spikes_index == 0: spikes_index = 1
