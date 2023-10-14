@@ -141,7 +141,7 @@ spikes_timer = pygame.USEREVENT + 2
 pygame.time.set_timer(spikes_timer, 500)
 
 pedras_timer = pygame.USEREVENT + 3
-pygame.time.set_timer(pedras_timer, 20)
+pygame.time.set_timer(pedras_timer, 50)
 
 
 
@@ -164,7 +164,7 @@ while True:
             # CONTROLA O PULO DO PROTAGONISTA
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_SPACE and protagonista_retangulo.bottom >= 470:
-                    protagonista_gravidade = -22
+                    protagonista_gravidade = -19
 
             if evento.type == pygame.KEYUP:
                 protagonista_superficies = protagonista_andando_superficie[int(protagonista_index)]
@@ -173,9 +173,9 @@ while True:
             if evento.type == obstaculos_timer:
                 if randint(0, 2):
                     # Retângulo dos spikes.
-                    lista_retang_obstaculos.append(spikes_superficie.get_rect(bottomright = (randint(800, 900), 470)))
+                    lista_retang_obstaculos.append(spikes_superficie.get_rect(bottomright = (randint(960, 1000), 470)))
                     # Retângulo das pedras.
-                    lista_retang_obstaculos.append(pedras_superficie.get_rect(bottomright = (randint(800, 900), 170)))
+                    lista_retang_obstaculos.append(pedras_superficie.get_rect(bottomright = (randint(960, 1200), 170)))
         
             if evento.type == spikes_timer:
                 if spikes_index == 0: spikes_index = 1
@@ -196,7 +196,7 @@ while True:
         tela.blit(plano_fundo, (0,0))
 
         # CHAMA A ANIMAÇÃO DO PROTAGONISTA
-        protagonista_gravidade += 1
+        protagonista_gravidade += 0.9
         protagonista_retangulo.y += protagonista_gravidade
         if protagonista_retangulo.bottom >= 470: protagonista_retangulo.bottom = 470
         animacao_protagonista()
