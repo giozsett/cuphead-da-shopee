@@ -5,14 +5,17 @@ from sys import exit
 def animacao_protagonista():
     global protagonista_superficies, protagonista_index
 
-    # Animação do personagem andando no chão
-    if(protagonista_retangulo.bottom < 330):
-        protagonista_superficies = protagonista_pulando_superficie
+
+    # Animação do personagem andando no chão e pulando.
+    if(protagonista_retangulo.bottom < 470):
+        protagonista_superficies = protagonista_pulando_superficie[int(protagonista_index)]
     else: 
         protagonista_index += 0.1
         if protagonista_index >= len(protagonista_andando_superficie): protagonista_index = 0
         protagonista_superficies = protagonista_andando_superficie[int(protagonista_index)]
 
+    # Faz o owlet aparecer na tela.
+    tela.blit(protagonista_superficies, protagonista_retangulo)
 
 
 
@@ -41,12 +44,17 @@ protagonista_atacando_superficie = []
 # Protagonista andando
 for imagem in range(1, 7):
     img = pygame.image.load(f'assets/protagonista/corrida/owlet_walk{imagem}.png').convert_alpha()
+    # Redimensionando pois o owlet está muito grande.
+    img = pygame.transform.scale(img, (128, 128))
     protagonista_andando_superficie.append(img)
-
+    
 # Protagonista pulando
 for imagem in range(1, 9):
     img = pygame.image.load(f'assets/protagonista/pulo/owlet_jump{imagem}.png').convert_alpha()
+    # Redimensionando para o pulo.
+    img = pygame.transform.scale(img, (128, 128))
     protagonista_pulando_superficie.append(img)
+    
 
 # Protagonista atacando
 for imagem in range(1, 7):
@@ -54,7 +62,7 @@ for imagem in range(1, 7):
 
 # RETÂNGULO DE COLISÃO DO PROTAGONISTA
 protagonista_superficies = protagonista_andando_superficie[protagonista_index]
-protagonista_retangulo = protagonista_superficies.get_rect(midbottom = (100, 330))
+protagonista_retangulo = protagonista_superficies.get_rect(midbottom = (100, 470))
 protagonista_gravidade = 0
 
 
@@ -74,7 +82,7 @@ while True:
 
         # CONTROLA O PULO DO PROTAGONISTA
         if evento.type == pygame.KEYDOWN:
-            if evento.key == pygame.K_SPACE and protagonista_retangulo.bottom >= 330:
+            if evento.key == pygame.K_SPACE and protagonista_retangulo.bottom >= 470:
                 protagonista_gravidade = -20
 
 
@@ -85,9 +93,9 @@ while True:
     # CHAMA A ANIMAÇÃO DO PROTAGONISTA
     protagonista_gravidade += 1
     protagonista_retangulo.y += protagonista_gravidade
-    if protagonista_retangulo.bottom >= 330: protagonista_retangulo.bottom = 330
+    if protagonista_retangulo.bottom >= 470: protagonista_retangulo.bottom = 470
     animacao_protagonista()
-    tela.blit(protagonista_superficies, protagonista_retangulo)
+    
 
     # ATUALIZA A TELA COM O CONTEÚDO
     pygame.display.update()
