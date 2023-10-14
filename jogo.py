@@ -59,12 +59,16 @@ pygame.display.set_caption("OWLET ULTRA ADVENTURES")
 # IMPORTANDO ARQUIVOS DE IMAGEM DO JOGUIN
 plano_fundo = pygame.image.load('assets/fundo/fundo-sem-camadas.png').convert()
 
+# IMPORTANDO ARQUIVOS DE FONTES
+youngserif_font = pygame.font.Font('assets/fonts/YoungSerif-Regular.ttf', 80)
+youngserif_peq_font = pygame.font.Font('assets/fonts/YoungSerif-Regular.ttf', 50)
+
 # DEIXANDO OS TAMANHOS DE ACORDO COM O TAMANHO DA TELA
 plano_fundo = pygame.transform.scale(plano_fundo, tamanho_tela)
 
 
 # VERIFICA SE O JOGO ESTÁ RODANDO 
-jogo_rodando = False
+jogo_rodando = True
 
 # CARREGANDO IMAGENS DE ANIMAÇÃO DO PERSONAGEM
 protagonista_index = 0
@@ -117,13 +121,13 @@ spikes_index = 0
 for imagem in range(1, 4):
     img = pygame.image.load(f'assets/boss/ataque-chao/boss_groundslam{imagem}.png').convert_alpha()
     # Redimensionando para ficar do mesmo tamanho das pedras.
-    img = pygame.transform.scale(img, (96, 96))
+    img = pygame.transform.scale(img, (64, 64))
     spikes_frames_superficie.append(img)
 
 # Pedras voadoras
 pedras_index = 0
 pedras_superficie = pygame.image.load(f'assets/boss/ataque-pedra/cast1.png').convert_alpha()
-pedras_superficie = pygame.transform.scale(pedras_superficie, (80, 80))
+pedras_superficie = pygame.transform.scale(pedras_superficie, (64, 64))
 
 spikes_superficie = spikes_frames_superficie[spikes_index]
 lista_retang_obstaculos = []
@@ -131,13 +135,13 @@ lista_retang_obstaculos = []
 
 # CRIA O TIMER DOS OBSTÁCULOS
 obstaculos_timer = pygame.USEREVENT + 1
-pygame.time.set_timer(obstaculos_timer, 1200)
+pygame.time.set_timer(obstaculos_timer, 1400)
 
 spikes_timer = pygame.USEREVENT + 2
-pygame.time.set_timer(spikes_timer, 280)
+pygame.time.set_timer(spikes_timer, 500)
 
 pedras_timer = pygame.USEREVENT + 3
-pygame.time.set_timer(pedras_timer, 90)
+pygame.time.set_timer(pedras_timer, 20)
 
 
 
@@ -160,7 +164,7 @@ while True:
             # CONTROLA O PULO DO PROTAGONISTA
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_SPACE and protagonista_retangulo.bottom >= 470:
-                    protagonista_gravidade = -20
+                    protagonista_gravidade = -22
 
             if evento.type == pygame.KEYUP:
                 protagonista_superficies = protagonista_andando_superficie[int(protagonista_index)]
@@ -169,9 +173,9 @@ while True:
             if evento.type == obstaculos_timer:
                 if randint(0, 2):
                     # Retângulo dos spikes.
-                    lista_retang_obstaculos.append(spikes_superficie.get_rect(bottomright = (randint(960, 1400), 470)))
+                    lista_retang_obstaculos.append(spikes_superficie.get_rect(bottomright = (randint(800, 900), 470)))
                     # Retângulo das pedras.
-                    lista_retang_obstaculos.append(pedras_superficie.get_rect(bottomright = (randint(960, 1250), 200)))
+                    lista_retang_obstaculos.append(pedras_superficie.get_rect(bottomright = (randint(800, 900), 170)))
         
             if evento.type == spikes_timer:
                 if spikes_index == 0: spikes_index = 1
@@ -201,11 +205,14 @@ while True:
         lista_retang_obstaculos = obstaculos(lista_retang_obstaculos)
     
         # FAZ AS COLISOES ACONTECEREM
-        colisoes = jogo_rodando(protagonista_retangulo, lista_retang_obstaculos)
+        jogo_rodando = colisao(protagonista_retangulo, lista_retang_obstaculos)
 
     # TELA DE GAME OVER
     else:
         tela.blit(plano_fundo, (0,0))
+        gameover_texto = youngserif_font.render(f'game over', False, (255, 255, 255))
+        gameover_texto_retangulo = gameover_texto.get_rect(center = (480, 260))
+        tela.blit(gameover_texto, gameover_texto_retangulo)
 
 
     # ATUALIZA A TELA COM O CONTEÚDO
