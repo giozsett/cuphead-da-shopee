@@ -19,7 +19,6 @@ def animacao_protagonista():
     tela.blit(protagonista_superficies, protagonista_retangulo)
 
 
-
 # DEFINE O MOVIMENTO DOS OBSTÁCULOS
 def obstaculos(lista_obstaculos):
     # Confere se há algum obstáculo na lista.
@@ -37,6 +36,16 @@ def obstaculos(lista_obstaculos):
     
     else:
         return []
+    
+
+# CRIA A COLISÃO DOS OBJETOS COM O PROTAGONISTA
+def colisao(protagonista, obstaculos):
+    if obstaculos:
+        for obstaculo_retangulo in obstaculos:
+            if protagonista.colliderect(obstaculo_retangulo): return False
+    return True
+
+
 
 
 # INICIALIZA O PYGAME
@@ -45,13 +54,17 @@ pygame.init()
 # CRIANDO A TELA DO JOGO E DEFININDO SEU NOME E TAMANHO
 tamanho_tela = (960, 540)
 tela = pygame.display.set_mode(tamanho_tela)
-pygame.display.set_caption("Hollownait")
+pygame.display.set_caption("OWLET ULTRA ADVENTURES")
 
 # IMPORTANDO ARQUIVOS DE IMAGEM DO JOGUIN
 plano_fundo = pygame.image.load('assets/fundo/fundo-sem-camadas.png').convert()
 
 # DEIXANDO OS TAMANHOS DE ACORDO COM O TAMANHO DA TELA
 plano_fundo = pygame.transform.scale(plano_fundo, tamanho_tela)
+
+
+# VERIFICA SE O JOGO ESTÁ RODANDO 
+jogo_rodando = False
 
 # CARREGANDO IMAGENS DE ANIMAÇÃO DO PERSONAGEM
 protagonista_index = 0
@@ -131,57 +144,69 @@ pygame.time.set_timer(pedras_timer, 90)
 # CRIA O RELÓGIO QUE CONTROLA O FPS
 relogio = pygame.time.Clock()
 
-
-
 # CRIA O LOOP PRINCIPAL DO JOGO
 while True:
 
     # IMPLEMENTA OS EVENTOS PRESENTES NO JOGO
     for evento in pygame.event.get():
-
+        
         # FECHA A JANELA DO JOGO
         if evento.type == pygame.QUIT:
             pygame.quit()
             exit()
 
-        # CONTROLA O PULO DO PROTAGONISTA
-        if evento.type == pygame.KEYDOWN:
-            if evento.key == pygame.K_SPACE and protagonista_retangulo.bottom >= 470:
-                protagonista_gravidade = -20
+        if jogo_rodando:
+            jogo_rodando = True
+            # CONTROLA O PULO DO PROTAGONISTA
+            if evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_SPACE and protagonista_retangulo.bottom >= 470:
+                    protagonista_gravidade = -20
 
-        if evento.type == pygame.KEYUP:
-            protagonista_superficies = protagonista_andando_superficie[int(protagonista_index)]
+            if evento.type == pygame.KEYUP:
+                protagonista_superficies = protagonista_andando_superficie[int(protagonista_index)]
 
-        # CRIA EVENTOS REFERENTES AOS OBSTÁCULOS
-        if evento.type == obstaculos_timer:
-            if randint(0, 2):
-                # Retângulo dos spikes.
-                lista_retang_obstaculos.append(spikes_superficie.get_rect(bottomright = (randint(960, 1400), 470)))
-                # Retângulo das pedras.
-                lista_retang_obstaculos.append(pedras_superficie.get_rect(bottomright = (randint(960, 1250), 200)))
+         # CRIA EVENTOS REFERENTES AOS OBSTÁCULOS
+            if evento.type == obstaculos_timer:
+                if randint(0, 2):
+                    # Retângulo dos spikes.
+                    lista_retang_obstaculos.append(spikes_superficie.get_rect(bottomright = (randint(960, 1400), 470)))
+                    # Retângulo das pedras.
+                    lista_retang_obstaculos.append(pedras_superficie.get_rect(bottomright = (randint(960, 1250), 200)))
         
-        if evento.type == spikes_timer:
-            if spikes_index == 0: spikes_index = 1
-            else: spikes_index = 0
-            spikes_superficie = spikes_frames_superficie[spikes_index]
+            if evento.type == spikes_timer:
+                if spikes_index == 0: spikes_index = 1
+                else: spikes_index = 0
+                spikes_superficie = spikes_frames_superficie[spikes_index]
 
-        if evento.type == pedras_timer:
-            if pedras_index == 0: pedras_index = 1
-            else: pedras_index = 0
-            pedras_superficie = pedras_superficie
+            if evento.type == pedras_timer:
+                if pedras_index == 0: pedras_index = 1
+                else: pedras_index = 0
+                pedras_superficie = pedras_superficie
 
-    # FAZ OS ELEMENTOS APARECEREM NA TELA
-    tela.blit(plano_fundo, (0,0))
+        else:
+            jogo_rodando = False
 
-    # CHAMA A ANIMAÇÃO DO PROTAGONISTA
-    protagonista_gravidade += 1
-    protagonista_retangulo.y += protagonista_gravidade
-    if protagonista_retangulo.bottom >= 470: protagonista_retangulo.bottom = 470
-    animacao_protagonista()
 
-    # CHAMA A FUNÇÃO DOS OBSTÁCULOS SE MOVENDO
-    lista_retang_obstaculos = obstaculos(lista_retang_obstaculos)
+    if jogo_rodando:
+        # FAZ OS ELEMENTOS APARECEREM NA TELA
+        tela.blit(plano_fundo, (0,0))
+
+        # CHAMA A ANIMAÇÃO DO PROTAGONISTA
+        protagonista_gravidade += 1
+        protagonista_retangulo.y += protagonista_gravidade
+        if protagonista_retangulo.bottom >= 470: protagonista_retangulo.bottom = 470
+        animacao_protagonista()
+
+        # CHAMA A FUNÇÃO DOS OBSTÁCULOS SE MOVENDO
+        lista_retang_obstaculos = obstaculos(lista_retang_obstaculos)
     
+        # FAZ AS COLISOES ACONTECEREM
+        colisoes = jogo_rodando(protagonista_retangulo, lista_retang_obstaculos)
+
+    # TELA DE GAME OVER
+    else:
+        tela.blit(plano_fundo, (0,0))
+
 
     # ATUALIZA A TELA COM O CONTEÚDO
     pygame.display.update()
